@@ -1,0 +1,40 @@
+# Use Ubuntu as a base image
+FROM ubuntu:22.04
+
+# Install dependencies: compilers, MPI, make, etc.
+RUN apt-get update && \
+    apt-get install -y \
+        build-essential \
+        gfortran \
+        mpich \
+        wget \
+        unzip \
+        && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /opt
+
+# Download NAS Parallel Benchmarks (assuming version 3.4.1)
+RUN wget https://www.nas.nasa.gov/assets/npb/NPB3.4.1.tar.gz && \
+    tar -xzf NPB3.4.1.tar.gz && \
+    rm NPB3.4.1.tar.gz
+
+# Set environment variables
+ENV NPB_HOME=/opt/NPB3.4.1
+ENV PATH="$NPB_HOME/bin:$PATH"
+
+WORKDIR /opt/NPB3.4.1/NPB3.4-OMP
+RUN cp ./config/make.def.template ./config/make.def && \
+    sed -i 's|^FORTRAN.*|FORTRAN = gfortran|' config/make.def && \
+    sed -i 's|^OPTS.*|OPTS = -O3 -fopenmp|' config/make.def
+
+# Build NPB (example: Fortran, Class A, serial version)
+
+RUN cp ./config/suite.def.template ./config/suite.def && \
+    make suite CLASS=A
+
+COPY run_bench.sh /opt/NPB3.4.1/NPB3.4-OMP/run_bench.sh
+RUN chmod +x /opt/NPB3.4.1/NPB3.4-OMP/run_bench.sh
+CMD ["/opt/NPB3.4.1/NPB3.4-OMP/run_bench.sh"]
+# Default command: run a benchmark
+# CMD ["bin/npb"]

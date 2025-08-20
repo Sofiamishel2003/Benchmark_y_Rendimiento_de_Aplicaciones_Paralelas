@@ -1,5 +1,4 @@
-## Building
-
+## Build
 ```
 docker build -t <image-name> . 
 ```
@@ -8,11 +7,11 @@ Si les sale error de ubuntu:22.04 solo corran lo siguiente, y luego vuelvan a co
 docker pull ubuntu:22.04
 ```
 
-## Running
-(on WSL)
+## Run
 ```
-docker run --rm -it -v $(pwd)/results:/results <image-name>
+docker run --rm -it -v $(pwd)/results:/opt/NPB3.4.1/results nas-bench
 ```
+
 ## Entrypoint
 Por si quieren debuggear o cambiar cosas desde adentro
 
