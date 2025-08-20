@@ -21,5 +21,7 @@ RUN mkdir build && cd build && \
     make -j$(nproc)
 
 # Default command: run HPCG with 4 MPI ranks
+COPY hpcg.dat /opt/hpcg/build/hpcg.dat
 WORKDIR /results
+COPY hpcg.dat /results
 CMD ["mpirun", "-np", "4", "/opt/hpcg/build/xhpcg"]
